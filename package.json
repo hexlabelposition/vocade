@@ -1,6 +1,7 @@
 {
   "name": "vocade",
   "version": "1.0.0",
+  "license": "MIT",
   "scripts": {
     "fetch-model": "bash scripts/fetch-model.sh",
     "dev": "vite",

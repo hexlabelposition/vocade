@@ -27,3 +27,7 @@ npm run dev           # http://localhost:5173
 - `src/numbers.ts`: слова в цифры + словарь для grammar
 - `src/speech.ts`: микрофон и Vosk (грузится отдельным чанком)
 - `src/main.ts`: UI, JsBarcode (Code128), qrcode
+
+## Лицензия
+
+[MIT](LICENSE)
