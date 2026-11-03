@@ -32,7 +32,9 @@ export default defineConfig({
   plugins: [
     ...(https ? [basicSsl()] : []),
     VitePWA({
-      registerType: 'autoUpdate',
+      // не autoUpdate: тот перезагружает открытую страницу после каждого деплоя, а это
+      // заново инициализирует модель. Новая версия включится при следующем запуске приложения
+      registerType: 'prompt',
       includeAssets: ['icon.svg', 'icon-192.png', 'icon-512.png'],
       manifest: {
         name: 'Vocade',
