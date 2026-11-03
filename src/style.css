@@ -36,7 +36,11 @@ body {
 .app {
   max-width: 520px;
   margin: 0 auto;
-  min-height: 100dvh;
+  /* --vvh — реальная видимая высота (visualViewport, см. main.ts): при открытой
+     клавиатуре кнопка микрофона поднимается над ней, если хватает места.
+     До запуска JS — svh (высота с показанными панелями браузера), для старых — vh */
+  min-height: 100vh;
+  min-height: var(--vvh, 100svh);
   padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;

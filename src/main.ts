@@ -101,7 +101,13 @@ function resetMic() {
   micLabel.textContent = 'Говорить'
 }
 
+// Тап по кнопке при открытой клавиатуре сначала снимает фокус с поля, клавиатура
+// закрывается, и кнопка уезжает вниз из-под пальца — клик теряется. Поэтому фокус
+// на pointerdown не трогаем, а клавиатуру закрываем уже в обработчике клика.
+micBtn.addEventListener('pointerdown', (e) => e.preventDefault())
+
 micBtn.addEventListener('click', async () => {
+  input.blur()
   if (listener) {
     listener.stop()
     resetMic()
@@ -129,6 +135,20 @@ micBtn.addEventListener('click', async () => {
         : 'Не удалось включить микрофон (нужен HTTPS или localhost).'
   }
 })
+
+// --- высота видимой области ---
+// visualViewport уменьшается при открытой клавиатуре во всех браузерах (в отличие
+// от vh/svh/dvh), так что кнопка микрофона остаётся над клавиатурой, если есть место.
+const vv = window.visualViewport
+if (vv) {
+  const syncHeight = () => {
+    // при pinch-zoom видимая область тоже «уменьшается» — это не клавиатура, игнорируем
+    if (vv.scale > 1.01) return
+    document.documentElement.style.setProperty('--vvh', `${vv.height}px`)
+  }
+  vv.addEventListener('resize', syncHeight)
+  syncHeight()
+}
 
 // --- старт ---
 setFormat(format)
