@@ -95,12 +95,16 @@ $('clear').addEventListener('click', () => {
   void render()
 })
 
+function resetMic() {
+  listener = null
+  micBtn.classList.remove('on')
+  micLabel.textContent = 'Говорить'
+}
+
 micBtn.addEventListener('click', async () => {
   if (listener) {
     listener.stop()
-    listener = null
-    micBtn.classList.remove('on')
-    micLabel.textContent = 'Говорить'
+    resetMic()
     partialEl.innerHTML = '&nbsp;'
     return
   }
@@ -111,6 +115,8 @@ micBtn.addEventListener('click', async () => {
         partialEl.textContent = t
         append(wordsToDigits(t))
       },
+      // распознанный текст оставляем на экране, чтобы было видно, что услышано
+      onAutoStop: resetMic,
     })
     micBtn.classList.add('on')
     micLabel.textContent = 'Стоп'
