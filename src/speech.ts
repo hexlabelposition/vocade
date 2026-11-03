@@ -48,10 +48,11 @@ function removeStaleModels(): Promise<void> {
         if (dir && dir !== current) store.delete(cursor.primaryKey)
         cursor.continue()
       }
-      tx.oncomplete = tx.onerror = tx.onabort = () => {
+      const done = () => {
         db.close()
         resolve()
       }
+      tx.oncomplete = tx.onerror = tx.onabort = done
     }
   })
 }
