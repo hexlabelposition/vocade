@@ -149,6 +149,28 @@ button.ghost {
   color: #fff;
   cursor: pointer;
   transition: background 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+/* маленький спиннер, пока грузится модель; звук при этом уже записывается */
+.mic .spinner {
+  display: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgb(255 255 255 / 0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+.mic.loading .spinner {
+  display: block;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 .mic:disabled {
   opacity: 0.6;

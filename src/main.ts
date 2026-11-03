@@ -106,15 +106,21 @@ function resetMic() {
 // на pointerdown не трогаем, а клавиатуру закрываем уже в обработчике клика.
 micBtn.addEventListener('pointerdown', (e) => e.preventDefault())
 
+let starting = false // ждём разрешения на микрофон, повторные тапы игнорируем
+
 micBtn.addEventListener('click', async () => {
   input.blur()
+  if (starting) return
   if (listener) {
     listener.stop()
     resetMic()
     partialEl.innerHTML = '&nbsp;'
     return
   }
+  starting = true
   try {
+    // модель может ещё грузиться: listen() включает микрофон сразу и копит звук,
+    // а распознаёт, как только модель будет готова
     listener = await listen({
       onPartial: (t) => (partialEl.textContent = t || ' '),
       onFinal: (t) => {
@@ -133,6 +139,8 @@ micBtn.addEventListener('click', async () => {
       err instanceof DOMException && err.name === 'NotAllowedError'
         ? 'Нет доступа к микрофону. Разреши его в настройках браузера.'
         : 'Не удалось включить микрофон (нужен HTTPS или localhost).'
+  } finally {
+    starting = false
   }
 })
 
@@ -152,13 +160,15 @@ if (vv) {
 
 // --- старт ---
 setFormat(format)
+// кнопка доступна сразу, а спиннер в ней показывает, что модель ещё грузится
 loadModel()
-  .then(() => {
-    micBtn.disabled = false
-    micLabel.textContent = 'Говорить'
-  })
+  .then(() => micBtn.classList.remove('loading'))
   .catch((err) => {
     console.error(err)
+    // если уже записывали, listen() сам выключил микрофон
+    listener = null
+    micBtn.classList.remove('loading', 'on')
+    micBtn.disabled = true
     micLabel.textContent = 'Модель не загрузилась'
     statusEl.textContent = 'Проверь, что файл модели лежит в public/models (npm run fetch-model).'
   })
