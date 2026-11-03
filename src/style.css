@@ -27,6 +27,11 @@
 * {
   box-sizing: border-box;
 }
+/* без жеста «потянуть для обновления»: перезагрузка заново инициализирует модель */
+html,
+body {
+  overscroll-behavior-y: none;
+}
 body {
   margin: 0;
   background: var(--bg);
