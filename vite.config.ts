@@ -1,3 +1,4 @@
+import { readdirSync } from 'node:fs'
 import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 import basicSsl from '@vitejs/plugin-basic-ssl'
@@ -5,9 +6,29 @@ import basicSsl from '@vitejs/plugin-basic-ssl'
 // HTTPS=1 npm run dev -> самоподписанный HTTPS, чтобы микрофон работал с телефона в локальной сети
 const https = process.env.HTTPS === '1'
 
+// Модель собирает scripts/fetch-model.sh (запускается перед dev и build), в имени
+// файла — хэш содержимого, чтобы браузер не взял старую модель из кэша IndexedDB
+function modelFile(): string {
+  const files = (() => {
+    try {
+      return readdirSync('public/models').filter((f) => /^vosk-model-\w+\.tar\.gz$/.test(f))
+    } catch {
+      return []
+    }
+  })()
+  if (files.length !== 1) {
+    throw new Error(
+      `Ожидается ровно одна модель public/models/vosk-model-*.tar.gz, найдено ${files.length}. ` +
+        'Запусти npm run fetch-model.',
+    )
+  }
+  return files[0]
+}
+
 export default defineConfig({
   // GitHub Pages project page: https://hexlabelposition.github.io/vocade/
   base: '/vocade/',
+  define: { __MODEL_FILE__: JSON.stringify(modelFile()) },
   plugins: [
     ...(https ? [basicSsl()] : []),
     VitePWA({

@@ -122,7 +122,10 @@ micBtn.addEventListener('click', async () => {
     // модель может ещё грузиться: listen() включает микрофон сразу и копит звук,
     // а распознаёт, как только модель будет готова
     listener = await listen({
-      onPartial: (t) => (partialEl.textContent = t || ' '),
+      // пустые partial приходят и после финального результата — не затираем им текст
+      onPartial: (t) => {
+        if (t) partialEl.textContent = t
+      },
       onFinal: (t) => {
         partialEl.textContent = t
         append(wordsToDigits(t))

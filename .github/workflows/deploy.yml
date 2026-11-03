@@ -29,11 +29,12 @@ jobs:
 
       - run: bun install --frozen-lockfile
 
-      - name: Cache Vosk model
+      # кэшируем только скачанный архив, сама модель пересобирается из него за секунды
+      - name: Cache Vosk model download
         uses: actions/cache@v4
         with:
-          path: public/models
-          key: vosk-model-small-ru-0.22-${{ hashFiles('scripts/fetch-model.sh') }}
+          path: .model-cache
+          key: vosk-model-small-ru-0.22
 
       - run: bun run fetch-model
 

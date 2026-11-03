@@ -4,8 +4,11 @@
   "license": "MIT",
   "scripts": {
     "fetch-model": "bash scripts/fetch-model.sh",
+    "predev": "bash scripts/fetch-model.sh",
     "dev": "vite",
+    "predev:https": "bash scripts/fetch-model.sh",
     "dev:https": "HTTPS=1 vite",
+    "prebuild": "bash scripts/fetch-model.sh",
     "build": "tsc && vite build",
     "typecheck": "tsc && tsc -p scripts/tsconfig.json",
     "preview": "vite preview --host",

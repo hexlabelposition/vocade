@@ -1,7 +1,7 @@
 import type { Model, KaldiRecognizer } from 'vosk-browser'
 import { VOCABULARY } from './numbers'
 
-const MODEL_URL = `${import.meta.env.BASE_URL}models/vosk-model-small-ru-grammar.tar.gz`
+const MODEL_URL = `${import.meta.env.BASE_URL}models/${__MODEL_FILE__}`
 
 let modelPromise: Promise<Model> | null = null
 

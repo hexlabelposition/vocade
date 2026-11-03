@@ -3,10 +3,12 @@
 Vocade всегда распознаёт по своей грамматике (числа), граф для неё vosk строит сам,
 так что Gr.fst не нужен. Но vosk-browser без него модель не загружает, и словарь
 (words.txt) берёт из таблицы символов внутри Gr.fst. Поэтому:
-  1. достаём таблицу слов из Gr.fst в graph/words.txt;
+  1. достаём таблицу слов из Gr.fst в graph/words.txt, оставляя только слова
+     грамматики и служебные символы (<eps>, [unk], #0…) с исходными номерами:
+     полный словарь — 250 тыс. слов, и его разбор заметно тормозит загрузку;
   2. заменяем Gr.fst минимальным валидным VectorFst (одно финальное состояние).
 
-Использование: python3 strip-lm.py <путь к graph/>
+Использование: python3 strip-lm.py <путь к graph/> <файл со словами, по одному на строку>
 """
 import struct
 import sys
@@ -74,8 +76,16 @@ STUB_FST = (
 )
 
 graph = Path(sys.argv[1])
+vocab = set(Path(sys.argv[2]).read_text().split())
 gr = graph / 'Gr.fst'
-words = extract_words(gr)
+all_words = extract_words(gr)
+
+# служебные символы вида <eps>, !SIL, [unk], #0 оставляем все
+words = [(w, k) for w, k in all_words if w in vocab or not w[0].isalpha()]
+missing = vocab - {w for w, _ in words}
+if missing:
+    sys.exit(f'Этих слов нет в словаре модели, распознать их нельзя: {" ".join(sorted(missing))}')
+
 (graph / 'words.txt').write_text(''.join(f'{w} {k}\n' for w, k in words))
 gr.write_bytes(STUB_FST)
-print(f'words.txt: {len(words)} слов, Gr.fst заменён заглушкой')
+print(f'words.txt: {len(words)} из {len(all_words)} слов, Gr.fst заменён заглушкой')
